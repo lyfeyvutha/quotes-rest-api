@@ -62,6 +62,8 @@
       else{
         // Update quote
         if($quotes->update()) {
+          // Re-read the updated quote details
+          $quotes->read_single();
           // Construct response array
           $quote_arr = array(
             'id' => $quotes->id,
