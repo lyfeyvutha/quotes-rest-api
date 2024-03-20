@@ -10,6 +10,10 @@ class Quote {
     public $category_id;
     public $author_id;
 
+    // Explicitly declare properties for author name and category name
+    public $author_name;
+    public $category_name;
+
     // Constructor with DB
     public function __construct($db) {
         $this->conn = $db;

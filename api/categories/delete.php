@@ -48,7 +48,7 @@ if(empty($data->id)) {
     } else {
         // Return error if category ID not found
         echo json_encode(
-            array('message' => 'category_id not found')
+            array('message' => 'category_id Not Found')
         );
     }
 }

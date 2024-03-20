@@ -46,7 +46,7 @@ if(empty($data->id)) {
     } else {
         // Return error if quote doesn't exist
         echo json_encode(
-            array('message' => 'Quote Not Found')
+            array('message' => 'No Quotes Found')
         );
     }
 }
