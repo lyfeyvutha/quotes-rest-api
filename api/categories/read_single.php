@@ -30,7 +30,7 @@ if ($categoryModel->read_single()) {
 } else {
     // No category found with the given ID
     echo json_encode(
-        array('message' => 'category_id Not Found')
+        array('message' => 'Category ID Not Found')
     );
 }
 ?>

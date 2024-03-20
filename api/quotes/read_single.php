@@ -1,5 +1,5 @@
 <?php 
-// Set CORS headers and content type
+// Set headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
@@ -7,27 +7,27 @@ header('Content-Type: application/json');
 include_once '../../config/Database.php';
 include_once '../../models/Quote.php';
 
-// Instantiate DB & connect
+// Instantiate Database and connect
 $database = new Database();
 $db = $database->connect();
 
-// Instantiate blog quote object
+// Instantiate Quote Object
 $quotes = new Quote($db);
 
-// Get the quote ID from the query parameters
+// Get ID from request, set to NULL if not provided
 $quotes->id = isset($_GET['id']) ? $_GET['id'] : NULL;
 
-// Read the single quote
+// Read single quote
 if ($quotes->read_single()) {
-    // Create an array to hold the quote details
+    // Create array for quote details
     $quotes_arr = array(
         'id' => $quotes->id,
         'quote' => $quotes->quote,
         'author' => $quotes->author_name,
         'category' => $quotes->category_name
     );
-
-    // Convert the array to JSON and output
+    
+    // Convert array to JSON and output
     echo json_encode($quotes_arr);
 } else {
     // No quotes found
@@ -35,4 +35,3 @@ if ($quotes->read_single()) {
         array('message' => 'No Quotes Found')
     );
 }
-?>

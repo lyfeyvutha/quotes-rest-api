@@ -30,7 +30,7 @@ if ($authorModel->read_single()) {
 } else {
     // No author found with the provided ID
     echo json_encode(
-        array('message' => 'author_id Not Found')
+        array('message' => 'Author not found')
     );
 }
 ?>
