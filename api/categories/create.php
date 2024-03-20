@@ -1,42 +1,51 @@
 <?php
-  // Headers
+  // Set headers for CORS and JSON content
   header('Access-Control-Allow-Origin: *');
   header('Content-Type: application/json');
   header('Access-Control-Allow-Methods: POST');
-  header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization,X-Requested-With');
+  header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type, Access-Control-Allow-Methods, Authorization, X-Requested-With');
 
+  // Include necessary files
   include_once '../../config/Database.php';
   include_once '../../models/Category.php';
-  // Instantiate DB and Connect
+
+  // Instantiate database connection
   $database = new Database();
   $db = $database->connect();
 
-  // Instantiate Post Object
+  // Instantiate Category object
   $categories = new Category($db);
 
   // Retrieve and decode JSON data sent in the request body
   $data = json_decode(file_get_contents("php://input"));
 
+  // Check if required parameters are missing
   if(empty($data->category)){
+    // Return error message if parameters are missing
     echo json_encode(
       array('message' => 'Missing Required Parameters')
     );
   }
-else{
-  $categories->category = $data->category;
+  else{
+    // Set category property from request data
+    $categories->category = $data->category;
 
-  // Create Categories
-  if($categories->create()) {
-    $categories->read_single();
+    // Create category
+    if($categories->create()) {
+      // Retrieve created category
+      $categories->read_single();
+      // Construct response array
       $category_arr = array(
         'id' => $categories->id,
         'category' => $categories->category
       );
-      // Make JSON
-      print_r(json_encode($category_arr));
-  } else {
-    echo json_encode(
-      array('message' => 'Unable To Create Category')
-    );
+      // Return JSON response
+      echo json_encode($category_arr);
+    } else {
+      // Return error message if category creation fails
+      echo json_encode(
+        array('message' => 'Missing Required Parameters')
+      );
+    }
   }
-}
+?>

@@ -1,5 +1,5 @@
 <?php 
-  // Headers
+  // Set headers for CORS and JSON content
   header('Access-Control-Allow-Origin: *');
   header('Content-Type: application/json');
   header('Access-Control-Allow-Methods: PUT');
@@ -16,70 +16,74 @@
   $db = $database->connect();
 
   // Instantiate Quote object
-  $quote = new Quote($db);
+  $quotes = new Quote($db);
 
-  // Get raw quote data
+  // Retrieve and decode JSON data sent in the request body
   $data = json_decode(file_get_contents("php://input"));
 
-  // Check for missing parameters
+  // Check if required parameters are missing
   if(empty($data->author_id) || empty($data->category_id) || empty($data->quote) || empty($data->id)){
+    // Return error message if parameters are missing
     echo json_encode(
       array('message' => 'Missing Required Parameters')
     );
   }
   else{
-    // Set ID to update
-    $quote->id = $data->id;
+    // Set ID for update
+    $quotes->id = $data->id;
 
     // Check if quote exists
-    if($quote->read_single()){
-      // Set quote properties
-      $quote->quote = $data->quote;
-      $quote->author_id = $data->author_id;
-      $quote->category_id = $data->category_id;
+    if($quotes->read_single()){
+      // Assign updated values
+      $quotes->quote = $data->quote;
+      $quotes->author_id = $data->author_id;
+      $quotes->category_id = $data->category_id;
 
       // Instantiate Author and Category objects
-      $author = new Author($db);
-      $author->id = $quote->author_id;
-      $category = new Category($db);
-      $category->id = $quote->category_id;
+      $authors = new Author($db);
+      $authors->id = $quotes->author_id;
+      $categories = new Category($db);
+      $categories->id = $quotes->category_id;
 
       // Check if author exists
-      if(!$author->read_single()){
+      if(!$authors->read_single()){
+        // Return error if author not found
         echo json_encode(
           array('message' => 'author_id Not Found')
         );
       }
       // Check if category exists
-      else if(!$category->read_single()){
+      else if(!$categories->read_single()){
+        // Return error if category not found
         echo json_encode(
           array('message' => 'category_id Not Found')
         );
       }
       else{
         // Update quote
-        if($quote->update()) {
-          // Retrieve updated quote
-          $quote->read_single();
-          // Format data into an array
+        if($quotes->update()) {
+          // Re-read the updated quote details
+          $quotes->read_single();
+          // Construct response array
           $quote_arr = array(
-            'id' => $quote->id,
-            'quote' => $quote->quote,
-            'author_id' => $quote->author_id,
-            'category_id' => $quote->category_id
+            'id' => $quotes->id,
+            'quote' => $quotes->quote,
+            'author_id' => $quotes->author_id,
+            'category_id' => $quotes->category_id
           );
-          // Convert to JSON and output
+          // Return JSON response indicating successful update
           echo json_encode($quote_arr);
         } else {
+          // Return error message if quote update fails
           echo json_encode(
             array('message' => 'No Quotes Found')
           );
         }
       }
-    }
-    else{
+    } else {
+      // Return error message if quote not found
       echo json_encode(
-        array('message' => 'No Quotes Found')
+        array('message' => 'Quote Not Found')
       );
     }
   }
