@@ -1,5 +1,5 @@
-<?php 
-// Set headers
+<?php
+// Set CORS headers and content type
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
@@ -9,90 +9,83 @@ include_once '../../models/Quote.php';
 include_once '../../models/Author.php';
 include_once '../../models/Category.php';
 
-// Instantiate Database and connect
+// Instantiate DB & connect
 $database = new Database();
 $db = $database->connect();
 
-// Instantiate Quote Object
+// Instantiate blog quote object
 $quotes = new Quote($db);
 
-// Extract parameter from URL
-$param = basename($_SERVER['REQUEST_URI']);
+// Get the request URI and extract the parameter
+$url = $_SERVER['REQUEST_URI'];
+$url = explode('/', $url);
+$param = array_pop($url);
 
-
-// Check if author_id or category_id is present in the URL parameter
-if (preg_match('/author_id=(\d+)/', $param, $matches)) {
-  $quotes->author_id = $matches[1]; // Assign the matched author_id to the object property
+// Set author_id or category_id based on the parameter
+if (str_contains($param, 'author_id')) {
+    $quotes->author_id = $_GET['author_id'] ?? NULL;
+}
+if (str_contains($param, 'category_id')) {
+    $quotes->category_id = $_GET['category_id'] ?? NULL;
 }
 
-if (preg_match('/category_id=(\d+)/', $param, $matches)) {
-  $quotes->category_id = $matches[1]; // Assign the matched category_id to the object property
-}
-
-// Execute quote query
+// Retrieve quotes from the database
 $result = $quotes->read();
 
-// Get number of rows returned
+// Get the number of quotes
 $num = $result->rowCount();
 
-// Check if any quotes found
+// Check if any quotes are found
 if ($num > 0) {
-    // Initialize array for quotes
+    // Array to hold quotes
     $quotes_arr = array();
 
+    // Loop through each quote
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
 
-        // Create array for each quote item
-        $quotes_item = array(
+        // Construct quote item array
+        $quote_item = array(
             'id' => $id,
             'quote' => html_entity_decode($quote),
             'author' => $author_name,
             'category' => $category_name
         );
 
-        // Push quote item to array
-        array_push($quotes_arr, $quotes_item);
+        // Push quote item to "data"
+        array_push($quotes_arr, $quote_item);
     }
 
-    // Convert array to JSON and output
+    // Convert the array to JSON and output
     echo json_encode($quotes_arr);
 } else {
-    // Check if author_id or category_id provided
-    if (!empty($quotes->author_id) && !empty($quotes->category_id)) {
-        // No quotes found
-        echo json_encode(
-            array('message' => 'No Quotes Found')
-        );
-    } else {
-        // Check if author_id provided
-        if (!empty($quotes->author_id)) {
-            $authors = new Author($db);
-            $authors->id = $quotes->author_id;
-            if (!$authors->read_single()) {
-                // Author not found
-                echo json_encode(
-                    array('message' => 'author_id Not Found')
-                );
-            }
-        } 
-        // Check if category_id provided
-        if (!empty($quotes->category_id)) {
-            $categories = new Category($db);
-            $categories->id = $quotes->category_id;
-            if (!$categories->read_single()) {
-                // Category not found
-                echo json_encode(
-                    array('message' => 'category_id Not Found')
-                );
-            }
-        }
-        // No quotes found
-        if (empty($quotes->author_id) && empty($quotes->category_id)) {
+    // Check if author_id or category_id is provided
+    if (!empty($quotes->author_id) || !empty($quotes->category_id)) {
+        // Instantiate Author and Category objects
+        $authors = new Author($db);
+        $authors->id = $quotes->author_id;
+        $categories = new Category($db);
+        $categories->id = $quotes->category_id;
+
+        // Check if author_id exists
+        if (!$authors->read_single()) {
+            echo json_encode(
+                array('message' => 'author_id Not Found')
+            );
+        } else if (!$categories->read_single()) { // Check if category_id exists
+            echo json_encode(
+                array('message' => 'category_id Not Found')
+            );
+        } else {
             echo json_encode(
                 array('message' => 'No Quotes Found')
             );
         }
+    } else {
+        // No quotes found
+        echo json_encode(
+            array('message' => 'No Quotes Found')
+        );
     }
 }
 ?>

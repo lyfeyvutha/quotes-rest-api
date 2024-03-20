@@ -1,43 +1,50 @@
-<?php 
-// Headers
+<?php
+// Set CORS headers and content type
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-// Include necessary files
+// Include database configuration and Author model
 include_once '../../config/Database.php';
 include_once '../../models/Author.php';
 
-// Instantiate Database and Connect
+// Instantiate database connection
 $database = new Database();
 $db = $database->connect();
 
-// Instantiate Author Model
-$authors = new Author($db);
+// Instantiate Author object
+$authorModel = new Author($db);
 
-// Execute read query to fetch authors
-$result = $authors->read();
+// Fetch authors from the database
+$result = $authorModel->read();
 
 // Get the number of rows returned
-$num = $result->rowCount();
+$numRows = $result->rowCount();
 
-// Check if any authors were found
-if ($num > 0) {
-    $authors_arr = array();
+// Check if any authors are found
+if ($numRows > 0) {
+    // Initialize an array to store authors
+    $authorsArray = array();
 
+    // Loop through the results and extract data
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
-        $author_item = array(
+
+        // Create an array for each author
+        $authorItem = array(
             'id' => $id,
             'author' => $author
         );
-        array_push($authors_arr, $author_item);
+
+        // Add the author data to the authors array
+        array_push($authorsArray, $authorItem);
     }
 
-    // Convert array to JSON and output
-    echo json_encode($authors_arr);
+    // Convert the authors array to JSON and output
+    echo json_encode($authorsArray);
 } else {
     // No authors found
     echo json_encode(
         array('message' => 'No Authors Found')
     );
 }
+?>

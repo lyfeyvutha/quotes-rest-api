@@ -1,48 +1,51 @@
-<?php 
-// Set headers
+<?php
+// Set CORS headers and content type
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-// Include necessary files
+// Include database configuration and Category model
 include_once '../../config/Database.php';
 include_once '../../models/Category.php';
 
-// Instantiate Database and connect
+// Instantiate database connection
 $database = new Database();
 $db = $database->connect();
 
-// Instantiate Category Object
-$categories = new Category($db);
+// Instantiate Category object
+$categoryModel = new Category($db);
 
-// Execute category read query
-$result = $categories->read();
+// Read all categories
+$result = $categoryModel->read();
 
-// Get number of rows returned
+// Get the number of categories
 $num = $result->rowCount();
 
-// Check if any categories found
+// Check if any categories are found
 if ($num > 0) {
-    // Initialize array for categories
-    $cat_arr = array();
+    // Create an array to hold categories
+    $categoryArray = array();
 
+    // Loop through each category
     while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        // Extract category data
         extract($row);
 
-        // Create array for each category item
-        $cat_item = array(
+        // Create an array for the category
+        $categoryItem = array(
             'id' => $id,
             'category' => $category
         );
 
-        // Push category item to array
-        array_push($cat_arr, $cat_item);
+        // Push the category data to the array
+        array_push($categoryArray, $categoryItem);
     }
 
-    // Convert array to JSON and output
-    echo json_encode($cat_arr);
+    // Convert the array to JSON and output
+    echo json_encode($categoryArray);
 } else {
     // No categories found
     echo json_encode(
         array('message' => 'No Categories Found')
     );
 }
+?>
