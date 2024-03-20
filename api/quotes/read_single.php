@@ -23,8 +23,8 @@ if ($quotes->read_single()) {
     $quotes_arr = array(
         'id' => $quotes->id,
         'quote' => $quotes->quote,
-        'author' => $quotes->author_id,
-        'category' => $quotes->category_id
+        'author' => $quotes->author_name,
+        'category' => $quotes->category_name
     );
     
     // Convert array to JSON and output

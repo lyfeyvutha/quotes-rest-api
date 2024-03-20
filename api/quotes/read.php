@@ -47,8 +47,8 @@ if ($num > 0) {
         $quotes_item = array(
             'id' => $id,
             'quote' => html_entity_decode($quote),
-            'author' => $author_id,
-            'category' => $category_id
+            'author' => $author_name,
+            'category' => $category_name
         );
 
         // Push quote item to array
