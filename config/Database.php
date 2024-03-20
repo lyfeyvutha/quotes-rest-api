@@ -16,20 +16,21 @@
             $this->host= getenv('DBHOST');
             $this->port= getenv('DBPORT');
         }
-    // DB Connect
-    public function connect() {
-        if($this->conn) {
-          return $this->conn; // connection already exists, return it
-        }
-        else{
-          $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->dbname}";
-          try { 
-            $this->conn = new PDO($dsn, $this->username, $this->password);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            return $this->conn;
-          } catch(PDOException $e) {
-            echo 'Connection Error: ' . $e->getMessage();
-          }
-        }
+// DB Connect
+public function connect() {
+  if($this->conn) {
+      return $this->conn; // connection already exists, return it
+  }
+  else {
+      $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->dbname};user={$this->username};password={$this->password}";
+      try { 
+          $this->conn = new PDO($dsn);
+          $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+          return $this->conn;
+      } catch(PDOException $e) {
+          echo 'Connection Error: ' . $e->getMessage();
       }
+  }
+}
+
     }
