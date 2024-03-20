@@ -1,5 +1,5 @@
 <?php
-  // Set headers for CORS and JSON content
+  // Set headers for CORS
   header('Access-Control-Allow-Origin: *');
   header('Content-Type: application/json');
   header('Access-Control-Allow-Methods: DELETE');
