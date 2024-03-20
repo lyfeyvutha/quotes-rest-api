@@ -53,12 +53,12 @@
         );
       }
       // Check if category exists
-      else if(!$categories->read_single()){
+      elseif(!$categories->read_single()){
         // Return error if category not found
         echo json_encode(
           array('message' => 'category_id Not Found')
         );
-      }
+      } 
       else{
         // Update quote
         if($quotes->update()) {
