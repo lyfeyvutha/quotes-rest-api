@@ -95,58 +95,72 @@ class Quote {
 
     // Create a new quote
     public function create() {
-        // Create query
+        // Define the SQL query to insert a new quote
         $query = 'INSERT INTO ' . $this->table . ' (quote, author_id, category_id) VALUES (:quote, :author_id, :category_id) RETURNING id';
 
-        // Prepare statement
+        // Prepare the SQL statement
         $stmt = $this->conn->prepare($query);
 
-        // Clean and bind data
+        // Clean data to prevent SQL injection
         $this->quote = htmlspecialchars(strip_tags($this->quote));
         $this->author_id = htmlspecialchars(strip_tags($this->author_id));
         $this->category_id = htmlspecialchars(strip_tags($this->category_id));
+
+        // Bind the data to the prepared statement
         $stmt->bindParam(':quote', $this->quote);
         $stmt->bindParam(':author_id', $this->author_id);
         $stmt->bindParam(':category_id', $this->category_id);
 
-        // Execute query
+        // Execute the SQL query
         if ($stmt->execute()) {
-            // Fetch the inserted ID
+            // Fetch the newly generated ID after insertion
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $this->id = $row['id'];
+            // Return true to indicate successful creation
             return true;
-        } else {
-            printf("Error: %s.\n", $stmt->error);
-            return false;
         }
+
+        // If execution fails, print the error message
+        printf("Error: %s.\n", $stmt->error);
+
+        // Return false to indicate failure
+        return false;
     }
 
-    // Update an existing quote
-    public function update() {
-        // Create query
-        $query = 'UPDATE ' . $this->table . ' SET quote = :quote, author_id = :author_id, category_id = :category_id WHERE id = :id';
+// Update a quote
+public function update() {
+    // Define the SQL query to update a quote
+    $query = 'UPDATE ' . $this->table . '
+                SET quote = :quote, author_id = :author_id, category_id = :category_id
+                WHERE id = :id';
 
-        // Prepare statement
-        $stmt = $this->conn->prepare($query);
+    // Prepare the SQL statement
+    $stmt = $this->conn->prepare($query);
 
-        // Clean and bind data
-        $this->quote = htmlspecialchars(strip_tags($this->quote));
-        $this->author_id = htmlspecialchars(strip_tags($this->author_id));
-        $this->category_id = htmlspecialchars(strip_tags($this->category_id));
-        $this->id = htmlspecialchars(strip_tags($this->id));
-        $stmt->bindParam(':quote', $this->quote);
-        $stmt->bindParam(':author_id', $this->author_id);
-        $stmt->bindParam(':category_id', $this->category_id);
-        $stmt->bindParam(':id', $this->id);
+    // Clean data to prevent SQL injection
+    $this->quote = htmlspecialchars(strip_tags($this->quote));
+    $this->author_id = htmlspecialchars(strip_tags($this->author_id));
+    $this->category_id = htmlspecialchars(strip_tags($this->category_id));
+    $this->id = htmlspecialchars(strip_tags($this->id));
 
-        // Execute query
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            printf("Error: %s.\n", $stmt->error);
-            return false;
-        }
+    // Bind the data to the prepared statement
+    $stmt->bindParam(':quote', $this->quote);
+    $stmt->bindParam(':author_id', $this->author_id);
+    $stmt->bindParam(':category_id', $this->category_id);
+    $stmt->bindParam(':id', $this->id);
+
+    // Execute the SQL query
+    if ($stmt->execute()) {
+        // Return true to indicate successful update
+        return true;
     }
+
+    // If execution fails, print the error message
+    printf("Error: %s.\n", $stmt->error);
+
+    // Return false to indicate failure
+    return false;
+}
 
 // Delete a quote
 public function delete() {

@@ -54,27 +54,36 @@ class Author {
         $this->author = $row['author'];
     }
 
-    // Create a new author
+    // Create author
     public function create() {
-        // Create query
-        $query = 'INSERT INTO ' . $this->table . ' (author) VALUES (:author)';
-
-        // Prepare statement
+        // Define the SQL query to insert a new author
+        $query = 'INSERT INTO ' . $this->table . ' (author) VALUES (:author) RETURNING id';
+  
+        // Prepare the SQL statement
         $stmt = $this->conn->prepare($query);
-
-        // Clean and bind data
+  
+        // Clean data to prevent SQL injection
         $this->author = htmlspecialchars(strip_tags($this->author));
+    
+        // Bind the author data to the prepared statement
         $stmt->bindParam(':author', $this->author);
-
-        // Execute query
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            printf("Error: %s.\n", $stmt->error);
-            return false;
+    
+        // Execute the SQL query
+        if($stmt->execute()) {
+        // Fetch the newly generated ID after insertion
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->id = $row['id'];
+        // Return true to indicate successful creation
+        return true;
         }
+    
+        // If execution fails, print the error message
+        printf("Error: %s.\n", $stmt->error);
+    
+        // Return false to indicate failure
+        return false;
     }
-
+  
     // Update an existing author
     public function update() {
         // Create query
@@ -97,26 +106,32 @@ class Author {
             return false;
         }
     }
+// Delete an author
+public function delete() {
+    // Define the SQL query to delete an author
+    $query = 'DELETE FROM ' . $this->table . ' WHERE id = :id';
 
-    // Delete an author
-    public function delete() {
-        // Create query
-        $query = 'DELETE FROM ' . $this->table . ' WHERE id = :id';
+    // Prepare the SQL statement
+    $stmt = $this->conn->prepare($query);
 
-        // Prepare statement
-        $stmt = $this->conn->prepare($query);
+    // Clean the data to prevent SQL injection
+    $this->id = htmlspecialchars(strip_tags($this->id));
 
-        // Clean and bind data
-        $this->id = htmlspecialchars(strip_tags($this->id));
-        $stmt->bindParam(':id', $this->id);
+    // Bind the author ID data to the prepared statement
+    $stmt->bindParam(':id', $this->id);
 
-        // Execute query
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            printf("Error: %s.\n", $stmt->error);
-            return false;
-        }
+    // Execute the SQL query
+    if ($stmt->execute()) {
+        // Return true to indicate successful deletion
+        return true;
     }
+
+    // If execution fails, print the error message
+    printf("Error: %s.\n", $stmt->error);
+
+    // Return false to indicate failure
+    return false;
+}
+
 }
 ?>

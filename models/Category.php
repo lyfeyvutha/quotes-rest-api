@@ -56,29 +56,36 @@ class Category {
         return true;
     }
 
-    // Create a new category
-    public function create() {
-        // Create query
+        // Create a new category
+        public function create() {
+        // Define the SQL query to insert a new category
         $query = 'INSERT INTO ' . $this->table . ' (category) VALUES (:category) RETURNING id';
 
-        // Prepare statement
+        // Prepare the SQL statement
         $stmt = $this->conn->prepare($query);
 
-        // Clean and bind data
+        // Clean data to prevent SQL injection
         $this->category = htmlspecialchars(strip_tags($this->category));
+
+        // Bind the data to the prepared statement
         $stmt->bindParam(':category', $this->category);
 
-        // Execute query
+        // Execute the SQL query
         if ($stmt->execute()) {
-            // Fetch the inserted ID
+            // Fetch the newly generated ID after insertion
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $this->id = $row['id'];
+            // Return true to indicate successful creation
             return true;
-        } else {
-            printf("Error: %s.\n", $stmt->error);
-            return false;
         }
+
+        // If execution fails, print the error message
+        printf("Error: %s.\n", $stmt->error);
+
+        // Return false to indicate failure
+        return false;
     }
+
 
     // Update an existing category
     public function update() {

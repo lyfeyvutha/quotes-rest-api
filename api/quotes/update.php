@@ -83,7 +83,7 @@
     } else {
       // Return error message if quote not found
       echo json_encode(
-        array('message' => 'Quote Not Found')
+        array('message' => 'No Quotes Found')
       );
     }
   }
