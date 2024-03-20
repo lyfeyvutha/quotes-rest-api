@@ -22,7 +22,7 @@ public function connect() {
       return $this->conn; // connection already exists, return it
   }
   else {
-      $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->dbname}";
+      $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->dbname};user={$this->username};password={$this->password}";
       try { 
           $this->conn = new PDO($dsn);
           $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
