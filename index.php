@@ -8,7 +8,7 @@
     <title>Midterm</title>
     <style>
     body {
-        background-color: #168;
+        background-color: #330;
         color: whitesmoke;
     }
     </style>

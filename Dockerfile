@@ -22,7 +22,7 @@ COPY apache.conf /etc/apache2/sites-available/000-default.conf
 RUN a2enmod rewrite
 
 # Suprisingly, I deployed to Render without this!
-# RUN echo "Listen 0.0.0.0:80" >> /etc/apache2/apache2.conf
+RUN echo "Listen 0.0.0.0:8080" >> /etc/apache2/apache2.conf
 
 # Expose port 8080 to allow incoming connections to the container
 EXPOSE 8080
