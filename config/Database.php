@@ -1,21 +1,21 @@
 <?php 
   class Database {
-    // DB Params
-    private $conn;
-    private $host;
-    private $port;
-    private $dbname;
-    private $username;
-    private $password;
+        // DB Params
+        private $conn;
+        private $host;
+        private $port;
+        private $dbname;
+        private $username;
+        private $password;
     
-  
-    public function __construct() {
-      $this->username = getenv('USERNAME');
-      $this->password = getenv('PASSWORD');
-      $this->dbname = getenv('DBNAME');
-      $this->host = getenv('HOST');
-      $this->port = getenv('PORT');
-    }
+
+        public function __construct() {
+            $this->username= getenv('DBUSERNAME');
+            $this->password= getenv('DBPASSWORD');
+            $this->dbname= getenv('DBNAME');
+            $this->host= getenv('DBHOST');
+            $this->port= getenv('DBPORT');
+        }
     // DB Connect
     public function connect() {
         if($this->conn) {
