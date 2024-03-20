@@ -1,36 +1,38 @@
 <?php
-// Set CORS headers and content type
+
+// Set headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-// Include database configuration and Category model
+// Include necessary files
 include_once '../../config/Database.php';
 include_once '../../models/Category.php';
 
-// Instantiate database connection
+// Instantiate Database and connect
 $database = new Database();
 $db = $database->connect();
 
-// Instantiate Category object
-$categoryModel = new Category($db);
+// Instantiate Category Object
+$category = new Category($db);
 
-// Get the category ID from the request parameters
-$categoryModel->id = isset($_GET['id']) ? $_GET['id'] : die();
+// Get ID from request, terminate if not provided
+$category->id = isset($_GET['id']) ? $_GET['id'] : die();
 
-// Read single category
-if ($categoryModel->read_single()) {
-    // Create an array to hold category data
-    $categoryArray = array(
-        'id' => $categoryModel->id,
-        'category' => $categoryModel->category
-    );
+// Retrieve category
+$category->read_single();
 
-    // Convert the array to JSON and output
-    echo json_encode($categoryArray);
-} else {
-    // No category found with the given ID
+// Create associative array for category details
+$category_arr = array(
+    'id' => $category->id,
+    'category' => $category->category
+);
+
+// Check if category exists
+if (!$category->category) {
     echo json_encode(
-        array('message' => 'Category ID Not Found')
+        array('message' => 'category_id Not Found')
     );
+} else {
+    // Convert array to JSON and output
+    echo json_encode($category_arr);
 }
-?>

@@ -1,36 +1,37 @@
 <?php
-// Set CORS headers and content type
+// Headers
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-// Include database configuration and Author model
+// Include database and model files
 include_once '../../config/Database.php';
 include_once '../../models/Author.php';
 
-// Instantiate database connection
+// Instantiate Database and Connect
 $database = new Database();
 $db = $database->connect();
 
-// Instantiate Author object
-$authorModel = new Author($db);
+// Instantiate Author Object
+$author = new Author($db);
 
-// Get the ID from the request parameters or terminate if not provided
-$authorModel->id = isset($_GET['id']) ? $_GET['id'] : die();
+// Check if ID is set, otherwise terminate with an error message
+$author->id = isset($_GET['id']) ? $_GET['id'] : die();
 
-// Read a single author
-if ($authorModel->read_single()) {
-    // Create an array for the author's data
-    $authorArray = array(
-        'id' => $authorModel->id,
-        'author' => $authorModel->author
-    );
+// Get Author
+$author->read_single();
 
-    // Convert the array to JSON and output
-    echo json_encode($authorArray);
-} else {
-    // No author found with the provided ID
+// Create associative array for author details
+$author_arr = array(
+    'id' => $author->id,
+    'author' => $author->author
+);
+
+// Check if author exists
+if (!$author->author) {
     echo json_encode(
-        array('message' => 'Author not found')
+        array('message' => 'author_id Not Found.')
     );
+} else {
+    // Convert array to JSON and output
+    echo json_encode($author_arr);
 }
-?>
