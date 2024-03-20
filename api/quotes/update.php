@@ -68,8 +68,8 @@
           $quote_arr = array(
             'id' => $quotes->id,
             'quote' => $quotes->quote,
-            'author_id' => $quotes->author_name,
-            'category_id' => $quotes->category_name
+            'author_id' => $quotes->author_id,
+            'category_id' => $quotes->category_id
           );
           // Return JSON response indicating successful update
           echo json_encode($quote_arr);
